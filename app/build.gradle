@@ -8,8 +8,10 @@
 
 plugins {
 
+    // Apply Spring Boot.
     id 'org.springframework.boot' version '2.7.0'
-    //id 'io.spring.dependency-management'
+
+    // А вот это не факт, что нужно указывать
     id 'java'
 
     // Apply the application plugin to add support for building a CLI application in Java.

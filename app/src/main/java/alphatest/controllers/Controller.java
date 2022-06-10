@@ -1,9 +1,11 @@
 package alphatest.controllers;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import alphatest.feignClients.GiphyClient;
 import alphatest.feignClients.OpenExchangeRatesClient;
@@ -13,12 +15,11 @@ import alphatest.models.ResponseGifModel;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.stereotype.Service;
 
 @RestController
 @RequestMapping("/demo")
-public class Controller {
+public class Controller{
     
     @Autowired
     private GiphyClient giphyClient;
