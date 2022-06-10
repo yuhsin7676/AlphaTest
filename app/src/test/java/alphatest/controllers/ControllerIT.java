@@ -2,7 +2,6 @@ package alphatest.controllers;
 
 import alphatest.feignClients.GiphyClient;
 import alphatest.feignClients.OpenExchangeRatesClient;
-import alphatest.models.ResponseGifModel;
 import alphatest.models.OpenExchangeRatesModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
@@ -11,16 +10,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.HashMap;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.Mockito;
 
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -31,7 +24,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(Controller.class)
@@ -61,8 +53,8 @@ public class ControllerIT {
     private OpenExchangeRatesClient openExchangeRatesClient;
     
     /*
-    * Все тесты проверяют контроллеры при валидных id сервисов и наличии данных за последний день.
-    * Приложение упадет, если эти условия не выполнены
+    * Р’СЃРµ С‚РµСЃС‚С‹ РїСЂРѕРІРµСЂСЏСЋС‚ РєРѕРЅС‚СЂРѕР»Р»РµСЂС‹ РїСЂРё РІР°Р»РёРґРЅС‹С… id СЃРµСЂРІРёСЃРѕРІ Рё РЅР°Р»РёС‡РёРё РґР°РЅРЅС‹С… Р·Р° РїРѕСЃР»РµРґРЅРёР№ РґРµРЅСЊ.
+    * РџСЂРёР»РѕР¶РµРЅРёРµ СѓРїР°РґРµС‚, РµСЃР»Рё СЌС‚Рё СѓСЃР»РѕРІРёСЏ РЅРµ РІС‹РїРѕР»РЅРµРЅС‹
     */
     
     @Test
