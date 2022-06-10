@@ -54,7 +54,7 @@ public class Controller{
         OpenExchangeRatesModel nowCourceObject = openExchangeRatesClient.getCource(nowDate.format(formatter), this.openExchangeRatesAppId);
         OpenExchangeRatesModel yesterdayCourceObject = openExchangeRatesClient.getCource(yesterdayDate.format(formatter), this.openExchangeRatesAppId);
         
-        // Здесь code - код валюты
+        // Р—РґРµСЃСЊ code - РєРѕРґ РІР°Р»СЋС‚С‹
         Double nowCource = nowCourceObject.rates.get(code);
         Double yesterdayCource = yesterdayCourceObject.rates.get(code);
         Double diff = nowCource - yesterdayCource;
@@ -69,7 +69,7 @@ public class Controller{
             tag = this.brokeTag;
         }
         
-        // response.gifResponse - json-объект в виде строки
+        // response.gifResponse - json-РѕР±СЉРµРєС‚ РІ РІРёРґРµ СЃС‚СЂРѕРєРё
         response.gifResponse = this.giphyClient.getGif(this.giphyApiKey, tag);
         return response;
         
