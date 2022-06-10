@@ -10,6 +10,7 @@ getCodes();
 *      Описание функций:
 ******************************/
 function getCodes(){
+    
     $.ajax({
         url: 'http://localhost:8080/demo/getCodes',
         method: 'GET',
@@ -24,6 +25,18 @@ function getCodes(){
             for(key in response)
                 selectCode.innerHTML += "<option>" + key + "</option>";
 
+        },
+        failed: function(data) {
+            
+            // Получим ответ response и выделим статус ошибки
+            var response = data.responseText;
+            response = JSON.parse(response);
+            
+            // Выведем сообщение об ошибке
+            resultMessage.style.display = "block";
+            resultMessage.className = "alert alert-danger";
+            resultMessage.innerHTML = "get-запрос к http://localhost:8080/demo/getCodes завершился с ошибкой " + response.status;
+            
         }
     });
 }

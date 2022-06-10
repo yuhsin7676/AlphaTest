@@ -60,21 +60,93 @@ public class ControllerIT {
     @MockBean
     private OpenExchangeRatesClient openExchangeRatesClient;
     
-    /**
-     * Test of getGif method, of class Controller.
-     */
+    /*
+    * Все тесты проверяют контроллеры при валидных id сервисов и наличии данных за последний день.
+    * Приложение упадет, если эти условия не выполнены
+    */
+    
     @Test
-    public void testGetGif() throws Exception{
+    public void test_getGif_when_return_rich_gif() throws Exception{
+        
+        Map<String, Double> yesterdayRates = new HashMap<String, Double>();
+        Map<String, Double> nowRates = new HashMap<String, Double>();
+        yesterdayRates.put("test", 30.0000);
+        nowRates.put("test", 35.0000);
+        
+        LocalDate nowDate = LocalDate.now();
+        LocalDate yesterdayDate = nowDate.minusDays(1);
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        
+        OpenExchangeRatesModel openExchangeRatesModelYesterday = new OpenExchangeRatesModel();
+        openExchangeRatesModelYesterday.base = "RUB";
+        openExchangeRatesModelYesterday.rates = yesterdayRates;
+        
+        OpenExchangeRatesModel openExchangeRatesModelNow = new OpenExchangeRatesModel();
+        openExchangeRatesModelNow.base = "RUB";
+        openExchangeRatesModelNow.rates = nowRates;
+        
+        Controller controller = Mockito.mock(Controller.class);
+        Mockito.when(openExchangeRatesClient.getCource(nowDate.format(formatter), this.openExchangeRatesAppId))
+                .thenReturn(openExchangeRatesModelNow);
+        Mockito.when(openExchangeRatesClient.getCource(yesterdayDate.format(formatter), this.openExchangeRatesAppId))
+                .thenReturn(openExchangeRatesModelYesterday);
+        Mockito.when(giphyClient.getGif(this.giphyApiKey, this.brokeTag))
+                .thenReturn("richjson");
+        mockMvc.perform(get("/demo/getGif/test")
+                    .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.key").value(1));     
+        
+    }
+    
+    @Test
+    public void test_getGif_when_return_broke_gif() throws Exception{
+        
+        Map<String, Double> yesterdayRates = new HashMap<String, Double>();
+        Map<String, Double> nowRates = new HashMap<String, Double>();
+        yesterdayRates.put("test", 35.0000);
+        nowRates.put("test", 30.0000);
+        
+        LocalDate nowDate = LocalDate.now();
+        LocalDate yesterdayDate = nowDate.minusDays(1);
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        
+        OpenExchangeRatesModel openExchangeRatesModelYesterday = new OpenExchangeRatesModel();
+        openExchangeRatesModelYesterday.base = "RUB";
+        openExchangeRatesModelYesterday.rates = yesterdayRates;
+        
+        OpenExchangeRatesModel openExchangeRatesModelNow = new OpenExchangeRatesModel();
+        openExchangeRatesModelNow.base = "RUB";
+        openExchangeRatesModelNow.rates = nowRates;
+        
+        Controller controller = Mockito.mock(Controller.class);
+        Mockito.when(openExchangeRatesClient.getCource(nowDate.format(formatter), this.openExchangeRatesAppId))
+                .thenReturn(openExchangeRatesModelNow);
+        Mockito.when(openExchangeRatesClient.getCource(yesterdayDate.format(formatter), this.openExchangeRatesAppId))
+                .thenReturn(openExchangeRatesModelYesterday);
+        Mockito.when(giphyClient.getGif(this.giphyApiKey, this.brokeTag))
+                .thenReturn("brokejson");
+        mockMvc.perform(get("/demo/getGif/test")
+                    .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(jsonPath("$.key").value(-1));     
+        
+    }
+
+    @Test
+    public void test_getCodes_when_openExchangeRatesAppId_is_valid() throws Exception{
         
         Map<String, Double> rates = new HashMap<String, Double>();
         rates.put("test", 30.0000);
         
+        LocalDate nowDate = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        
         OpenExchangeRatesModel openExchangeRatesModel = new OpenExchangeRatesModel();
         openExchangeRatesModel.base = "RUB";
         openExchangeRatesModel.rates = rates;
-        
-        LocalDate nowDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         
         Controller controller = Mockito.mock(Controller.class);
         Mockito.when(openExchangeRatesClient.getCource(nowDate.format(formatter), this.openExchangeRatesAppId))
@@ -82,24 +154,8 @@ public class ControllerIT {
         mockMvc.perform(get("/demo/getCodes")
                     .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("$.test").value(30.0000));
+                .andExpect(jsonPath("$.test").value(30.0000));    
         
-        
-        
-    }
-
-    /**
-     * Test of getCodes method, of class Controller.
-     */
-    @Test
-    public void testGetCodes() {
-        System.out.println("getCodes");
-        Controller instance = new Controller();
-        Map<String, Double> expResult = null;
-        Map<String, Double> result = instance.getCodes();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        //fail("The test case is a prototype.");
     }
     
 }
