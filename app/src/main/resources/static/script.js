@@ -12,7 +12,7 @@ getCodes();
 function getCodes(){
     
     $.ajax({
-        url: 'http://localhost:8080/demo/getCodes',
+        url: 'http://localhost:8080/demo/getRates',
         method: 'GET',
         dataType: "text/html",
         complete: function (data) {

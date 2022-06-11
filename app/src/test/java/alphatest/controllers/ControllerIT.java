@@ -1,8 +1,8 @@
 package alphatest.controllers;
 
-import alphatest.feignClients.GiphyClient;
-import alphatest.feignClients.OpenExchangeRatesClient;
 import alphatest.models.OpenExchangeRatesModel;
+import alphatest.services.GiphyService;
+import alphatest.services.OpenExchangeRatesService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -29,28 +29,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(Controller.class)
 public class ControllerIT {
     
-    @Value("${giphy.api_key}")
-    private String giphyApiKey;
-    
-    @Value("${openExchangeRates.app_id}")
-    private String openExchangeRatesAppId;
-    
     @Value("${giphy.rich}")
     private String richTag;
     
     @Value("${giphy.broke}")
     private String brokeTag;
     
-    private ObjectMapper mapper = new ObjectMapper();
-    
     @Autowired
     private MockMvc mockMvc;
     
     @MockBean
-    private GiphyClient giphyClient;
+    private GiphyService giphyService;
     
     @MockBean
-    private OpenExchangeRatesClient openExchangeRatesClient;
+    private OpenExchangeRatesService openExchangeRatesService;
     
     /*
     * Все тесты проверяют контроллеры при валидных id сервисов и наличии данных за последний день.
@@ -60,30 +52,9 @@ public class ControllerIT {
     @Test
     public void test_getGif_when_return_rich_gif() throws Exception{
         
-        Map<String, Double> yesterdayRates = new HashMap<String, Double>();
-        Map<String, Double> nowRates = new HashMap<String, Double>();
-        yesterdayRates.put("test", 30.0000);
-        nowRates.put("test", 35.0000);
-        
-        LocalDate nowDate = LocalDate.now();
-        LocalDate yesterdayDate = nowDate.minusDays(1);
-        
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        
-        OpenExchangeRatesModel openExchangeRatesModelYesterday = new OpenExchangeRatesModel();
-        openExchangeRatesModelYesterday.base = "RUB";
-        openExchangeRatesModelYesterday.rates = yesterdayRates;
-        
-        OpenExchangeRatesModel openExchangeRatesModelNow = new OpenExchangeRatesModel();
-        openExchangeRatesModelNow.base = "RUB";
-        openExchangeRatesModelNow.rates = nowRates;
-        
-        Controller controller = Mockito.mock(Controller.class);
-        Mockito.when(openExchangeRatesClient.getCource(nowDate.format(formatter), this.openExchangeRatesAppId))
-                .thenReturn(openExchangeRatesModelNow);
-        Mockito.when(openExchangeRatesClient.getCource(yesterdayDate.format(formatter), this.openExchangeRatesAppId))
-                .thenReturn(openExchangeRatesModelYesterday);
-        Mockito.when(giphyClient.getGif(this.giphyApiKey, this.brokeTag))
+        Mockito.when(openExchangeRatesService.getChangeCource("test"))
+                .thenReturn(5.00);
+        Mockito.when(giphyService.getGif(this.richTag))
                 .thenReturn("richjson");
         mockMvc.perform(get("/demo/getGif/test")
                     .contentType(MediaType.APPLICATION_JSON))
@@ -95,30 +66,9 @@ public class ControllerIT {
     @Test
     public void test_getGif_when_return_broke_gif() throws Exception{
         
-        Map<String, Double> yesterdayRates = new HashMap<String, Double>();
-        Map<String, Double> nowRates = new HashMap<String, Double>();
-        yesterdayRates.put("test", 35.0000);
-        nowRates.put("test", 30.0000);
-        
-        LocalDate nowDate = LocalDate.now();
-        LocalDate yesterdayDate = nowDate.minusDays(1);
-        
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        
-        OpenExchangeRatesModel openExchangeRatesModelYesterday = new OpenExchangeRatesModel();
-        openExchangeRatesModelYesterday.base = "RUB";
-        openExchangeRatesModelYesterday.rates = yesterdayRates;
-        
-        OpenExchangeRatesModel openExchangeRatesModelNow = new OpenExchangeRatesModel();
-        openExchangeRatesModelNow.base = "RUB";
-        openExchangeRatesModelNow.rates = nowRates;
-        
-        Controller controller = Mockito.mock(Controller.class);
-        Mockito.when(openExchangeRatesClient.getCource(nowDate.format(formatter), this.openExchangeRatesAppId))
-                .thenReturn(openExchangeRatesModelNow);
-        Mockito.when(openExchangeRatesClient.getCource(yesterdayDate.format(formatter), this.openExchangeRatesAppId))
-                .thenReturn(openExchangeRatesModelYesterday);
-        Mockito.when(giphyClient.getGif(this.giphyApiKey, this.brokeTag))
+        Mockito.when(openExchangeRatesService.getChangeCource("test"))
+                .thenReturn(-5.00);
+        Mockito.when(giphyService.getGif(this.brokeTag))
                 .thenReturn("brokejson");
         mockMvc.perform(get("/demo/getGif/test")
                     .contentType(MediaType.APPLICATION_JSON))
@@ -133,17 +83,9 @@ public class ControllerIT {
         Map<String, Double> rates = new HashMap<String, Double>();
         rates.put("test", 30.0000);
         
-        LocalDate nowDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        
-        OpenExchangeRatesModel openExchangeRatesModel = new OpenExchangeRatesModel();
-        openExchangeRatesModel.base = "RUB";
-        openExchangeRatesModel.rates = rates;
-        
-        Controller controller = Mockito.mock(Controller.class);
-        Mockito.when(openExchangeRatesClient.getCource(nowDate.format(formatter), this.openExchangeRatesAppId))
-                .thenReturn(openExchangeRatesModel);
-        mockMvc.perform(get("/demo/getCodes")
+        Mockito.when(openExchangeRatesService.getRates())
+                .thenReturn(rates);
+        mockMvc.perform(get("/demo/getRates")
                     .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(jsonPath("$.test").value(30.0000));    

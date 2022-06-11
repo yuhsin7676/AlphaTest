@@ -10,6 +10,11 @@ import alphatest.models.OpenExchangeRatesModel;
 @FeignClient(name="openExchangeRatesClient", url="${openExchangeRates.url}")
 public interface OpenExchangeRatesClient {
     
+    @GetMapping("/latest.json")
+    OpenExchangeRatesModel getRates(
+            @RequestParam("app_id") String app_id
+    );
+    
     @GetMapping("/historical/{date}.json")
     OpenExchangeRatesModel getCource(
             @PathVariable String date,

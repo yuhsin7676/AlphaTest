@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
-import alphatest.feignClients.GiphyClient;
-import alphatest.feignClients.OpenExchangeRatesClient;
+import alphatest.services.GiphyService;
+import alphatest.services.OpenExchangeRatesService;
 import alphatest.models.OpenExchangeRatesModel;
 import alphatest.models.ResponseGifModel;
 
@@ -24,16 +24,10 @@ import java.util.HashMap;
 public class Controller{
     
     @Autowired
-    private GiphyClient giphyClient;
+    private GiphyService giphyService;
     
     @Autowired
-    private OpenExchangeRatesClient openExchangeRatesClient;
-    
-    @Value("${giphy.api_key}")
-    private String giphyApiKey;
-    
-    @Value("${openExchangeRates.app_id}")
-    private String openExchangeRatesAppId;
+    private OpenExchangeRatesService openExchangeRatesService;
     
     @Value("${giphy.rich}")
     private String richTag;
@@ -46,18 +40,7 @@ public class Controller{
         
         ResponseGifModel response = new ResponseGifModel();
         
-        LocalDate nowDate = LocalDate.now();
-        LocalDate yesterdayDate = nowDate.minusDays(1);
-        
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        
-        OpenExchangeRatesModel nowCourceObject = openExchangeRatesClient.getCource(nowDate.format(formatter), this.openExchangeRatesAppId);
-        OpenExchangeRatesModel yesterdayCourceObject = openExchangeRatesClient.getCource(yesterdayDate.format(formatter), this.openExchangeRatesAppId);
-        
-        // Здесь code - код валюты
-        Double nowCource = nowCourceObject.rates.get(code);
-        Double yesterdayCource = yesterdayCourceObject.rates.get(code);
-        Double diff = nowCource - yesterdayCource;
+        double diff = openExchangeRatesService.getChangeCource(code);
         
         String tag;
         if(diff > 0){
@@ -70,19 +53,15 @@ public class Controller{
         }
         
         // response.gifResponse - json-объект в виде строки
-        response.gifResponse = this.giphyClient.getGif(this.giphyApiKey, tag);
+        response.gifResponse = this.giphyService.getGif(tag);
         return response;
         
     }
     
-    @GetMapping("/getCodes")
-    public Map<String, Double> getCodes() throws IOException{
-        
-        LocalDate nowDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-             
-        OpenExchangeRatesModel nowCourceObject = openExchangeRatesClient.getCource(nowDate.format(formatter), this.openExchangeRatesAppId);
-        return nowCourceObject.rates;
+    @GetMapping("/getRates")
+    public Map<String, Double> getRates() throws IOException{
+
+        return openExchangeRatesService.getRates();
         
     }
     
